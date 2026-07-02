@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "deck_id": "deck_cms_reliability_001",
+    "title": "Maintenance investment case - regional water utility",
+    "chassis_path": "./basic_slide_clean.pptx",
+    "stage": "build",
+    "created_at": "2026-06-18T00:00:00Z",
+    "updated_at": "2026-06-18T00:00:00Z"
+  },
+  "inputs": {
+    "analysis": [
+      { "analysis_id": "an_wo_extract", "kind": "xlsx", "path": "./inputs/work_orders_FY25.xlsx", "note": "48k work orders, cleaned." }
+    ],
+    "source_materials": [
+      { "source_material_id": "sm_wo", "label": "Regional water utility CMMS work-order export, FY25 (48,210 records).", "in_hand": true, "path": "./inputs/work_orders_FY25.xlsx" },
+      { "source_material_id": "sm_benchmark", "label": "Sector downtime-cost benchmark, 2024.", "in_hand": false, "locator": "cited as 'sector benchmark, 2024' - no document provided" }
+    ]
+  },
+  "audience": {
+    "altitude": "executive", "purpose": "decide", "disposition": "skeptical", "delivery": "live",
+    "adjustments": "Answer first and hard. Method to appendix. Survivable in 10 seconds.",
+    "signed_off": true
+  },
+  "governing_thought": "Lifting reactive maintenance to a planned ratio of 70% pays for itself within two years.",
+  "slides": [
+    { "slide_id": "s_cover", "order": 0, "section": "cover", "status": "structured", "exhibit_id": null, "citations": [] },
+    { "slide_id": "s_reco",  "order": 1, "section": "recommendations", "action_title": "Move to 70% planned maintenance now; the two-year payback is positive.", "message": "The recommendation and its headline payback, up front.", "body": ["Shift reactive work from 61% to 30% of orders by moving to a planned regime.", "Two-year payback is positive on the avoidable-downtime saving alone.", "No new headcount - the change is scheduling discipline, not resourcing."], "exhibit_id": null, "citations": [], "status": "structured" },
+    { "slide_id": "s_gap",   "order": 2, "section": "analysis", "action_title": "Reactive work runs at 61% of orders, well above the 30% target.", "message": "Quantify the gap the recommendation closes.", "exhibit_id": "ex_split", "citations": ["src_wo"], "status": "structured" },
+    { "slide_id": "s_cost",  "order": 3, "section": "analysis", "action_title": "The gap costs an estimated $4.1m a year in avoidable downtime.", "message": "Convert the gap into the dollar figure that drives the decision.", "exhibit_id": "ex_cost", "citations": ["src_wo", "src_benchmark"], "status": "structured" },
+    { "slide_id": "s_bib",   "order": 4, "section": "appendix", "action_title": "References", "message": "Bibliography.", "exhibit_id": null, "citations": [], "status": "structured" }
+  ],
+  "exhibits": [
+    {
+      "exhibit_id": "ex_split", "slide_id": "s_gap", "type": "chart",
+      "so_what": "Reactive share is double the target.", "emphasis": "reactive",
+      "genre": "bar", "multi_render": false,
+      "data_ref": {
+        "path": "./inputs/work_orders_FY25.xlsx", "selector": "pivot: order_type share of count",
+        "plotted_series": [ {"label": "Planned", "value": 0.39}, {"label": "Reactive", "value": 0.61} ],
+        "anchor": { "source_material_id": "sm_wo", "locator": "pivot_order_type!B2:B3" }
+      },
+      "figure_ids": ["fig_reactive_pct"], "object_kind": null,
+      "cooper": { "score": null, "iterations": 0, "frozen": false, "open_fixes": [] },
+      "status": "specced"
+    },
+    {
+      "exhibit_id": "ex_cost", "slide_id": "s_cost", "type": "stat",
+      "so_what": "The gap is material at the executive altitude.", "emphasis": null,
+      "genre": null, "multi_render": false, "data_ref": null,
+      "figure_ids": ["fig_annual_cost"], "object_kind": null,
+      "cooper": { "score": null, "iterations": 0, "frozen": false, "open_fixes": [] },
+      "status": "specced"
+    }
+  ],
+  "figures": [
+    { "figure_id": "fig_reactive_pct", "shown": "61%", "slide_id": "s_gap", "exhibit_id": "ex_split",
+      "role": "datapoint", "anchor": { "source_material_id": "sm_wo", "locator": "pivot_order_type!B3" },
+      "transform": "share of count, round to whole %", "source_value": null, "citation": "src_wo", "verification": "pending" },
+    { "figure_id": "fig_annual_cost", "shown": "$4.1m", "slide_id": "s_cost", "exhibit_id": "ex_cost",
+      "role": "callout", "anchor": { "source_material_id": "sm_benchmark", "locator": "table 3, row 2" },
+      "transform": "round to $0.1m", "source_value": null, "citation": "src_benchmark", "verification": "pending" }
+  ],
+  "sources": [
+    { "source_id": "src_wo", "citation": null, "bibliography_entry": null, "source_material_id": "sm_wo",
+      "claim": "Reactive work is 61% of orders.", "verification": "pending", "relevance_ok": null, "used_on": ["s_gap", "s_cost"] },
+    { "source_id": "src_benchmark", "citation": null, "bibliography_entry": null, "source_material_id": "sm_benchmark",
+      "claim": "Avoidable downtime costs ~$4.1m/yr.", "verification": "pending", "relevance_ok": null, "used_on": ["s_cost"] }
+  ],
+  "decisions": [],
+  "log": [ { "ts": "2026-06-18T00:00:00Z", "agent": "human", "object_ref": null, "action": "storyline signed off" } ]
+}

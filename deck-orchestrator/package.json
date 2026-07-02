@@ -1,0 +1,13 @@
+{
+  "name": "deck-orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Assembler for the Aurecon deck-orchestrator loop - builds a verified manifest into a branded .pptx.",
+  "main": "assembler.js",
+  "scripts": {
+    "build": "node assembler.js"
+  },
+  "dependencies": {
+    "pptxgenjs": "^3.12.0"
+  }
+}

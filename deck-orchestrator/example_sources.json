@@ -1,0 +1,5 @@
+{
+  "_comment": "Stand-in for the values Edward reads from the in-hand source documents. Live, Edward extracts these from the attached files; here they are the ground truth the number ledger is checked against.",
+  "fig_reactive_pct": 0.6093,
+  "fig_annual_cost": 4.08
+}
