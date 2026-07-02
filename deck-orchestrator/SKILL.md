@@ -24,6 +24,8 @@ That logic lives here, in `orchestrator.py`, not in any single deck skill.
 | **Cooper** | `assess-graphical-excellence` | genre pre-flight, then scores charts |
 | **Edward** | `dylan-rules` R-rules + the verification gate | the number ledger and reference registry |
 | **Daniel** | `aureconed` | brand and the whole visual layer |
+| **Fiona** | visual QA (vision pass over rendered slides) | what the reader actually sees - legibility, collisions, clipping, F-rule violations in the render |
+| **George** | `george` | adversarial scrutiny - context gaps, decomposition, backup defensibility; how the most detracting client receives the argument. Purely advisory |
 
 Edward has no standalone skill - he enforces the **R - References** family in
 `dylan-rules` plus the verification gate below. Build (the chassis, the actual
@@ -40,18 +42,51 @@ the source materials behind it. Build target is the cleaned Aurecon chassis.
                     write storyline (title + message + exhibit brief per slide),
                     set exhibit type and the emphasis series for charts
 2. Cooper pre-flight pick the Tufte genre per chart from data shape; flag multi-render
+2b. George challenge George red-teams the ghost deck (kill shots / exposed flanks /
+                    backup gaps) while the storyline is still cheap to change; his
+                    challenges batch into the sign-off so the human approves the
+                    narrative AND sees its known weaknesses in one sitting
 3. HUMAN GATE       the only stop. Approve storyline (P1) + make every judgment call -
-                    chart-vs-table, multi-render picks. Decisions batch here.
+                    chart-vs-table, multi-render picks, George's storyline challenges
+                    (address or accept as risk). Decisions batch here.
    --- back half runs unattended ---
 4. route by type    chart -> Ben+Cooper ; table/stat -> dylan+Daniel ; diagram -> assembler+Daniel
-5. Ben  build       native PptxGenJS chart, genre locked, grey, Tufte-correct
-6. Cooper score     >=8 passes; below -> ranked fixes -> Ben rebuilds (auto, cap 5) -> re-score
+5. Ben  build       native PptxGenJS chart, genre locked, grey, Tufte-correct.
+                    Ben designs TO the message: the slide's action title, message, and
+                    emphasis travel into his brief - the asserted figure must be the most
+                    prominent thing on the graphic. Live, Ben proposes N candidates and
+                    the rubric picks the best (selection + iteration, not iteration alone)
+6. Cooper score     hybrid. Mechanical rubric is the hard gate (encodable rules, real
+                    arithmetic); a model pass scores the perceptual criteria the rubric
+                    can't encode (understood simply, direct-label fit, default-challenge).
+                    Final = min(mechanical, perceptual) - judgement can demand better,
+                    never excuse worse. >=8 passes; below -> ranked fixes -> Ben rebuilds
+                    WITH the fixes and slide context (directed, never blind; cap 5;
+                    early-escalate the moment a rebuild fails to improve the score)
 7. Anna reconcile   chart still proves the message? title numbers match computed values?
                     contradiction -> human
-8. Edward verify    every figure traces to a verifiable source; references legitimate + relevant
+8. Edward verify    every figure traces to a verifiable source (mechanical arithmetic);
+                    relevance is the judgement half - does the document actually support
+                    the claim? An irrelevant source escalates like an unverifiable one
 9. Daniel brand     Aurecon Green on Anna's emphasis, everything else grey; audit all visual
 10. Orchestrator    assemble into the chassis (single writer), assign [n], render bibliography,
-                    one ground-truth render, deliver pack + batched questions
+                    one ground-truth render
+11. Fiona visual QA render every slide to an image and inspect the ARTEFACT, not the spec -
+                    clipped text, overlapping direct labels, collisions, off-canvas
+                    elements, F1-F4 in the render, two green moments. Blocking defects
+                    reopen the exhibit (beats the freeze - a chart that can't be read is
+                    broken, not cosmetic); rebuild loop capped at 2 passes. Covers every
+                    exhibit type, closing the gap where tables and diagrams skip Cooper
+12. Anna audit      dylan-rules Audit mode turned on the pipeline's own output: L2
+                    titles-only read, T1 per slide, Q1-Q3 deck-wide - the deck-emergent
+                    checks no per-exhibit stage can own. Flags batch into the delivery
+                    pack alongside open decisions
+13. George scrutiny the assembled pass: attack the finished argument as a skeptical
+                    client reading it standalone. Everything upstream verified the deck
+                    is CORRECT; George asks whether the argument survives a hostile
+                    room. Advisory only - challenges land in `scrutiny`, appear in the
+                    delivery pack, and NEVER block. Only the human resolves them:
+                    'addressed' or 'accepted_risk' - both legitimate, both recorded
 ```
 
 ## Routing by exhibit type
@@ -60,17 +95,34 @@ One flag Anna sets per exhibit. `chart` -> Ben + Cooper. `table` / `stat` /
 `callout` -> built straight to the `dylan-rules` F-rules and `aureconed`, skips
 Cooper. `diagram` (rare) -> assembler builds from native shapes, Daniel brands,
 skips Cooper. Ben and Cooper are chart-only; running Tufte criteria on a table is
-a category error.
+a category error. **Every** exhibit type, Cooper-scored or not, passes through
+Fiona's visual QA at the end - the render is inspected regardless of route.
 
 ## The gates (enforced in `orchestrator.py`)
 
 - **One human gate** - storyline sign-off, at the front. Everything needing the
   human batches into `decisions`.
-- **Cooper-Ben loop** - cap 5 rebuilds, pass threshold 8. Freeze flips on at
+- **Cooper-Ben loop** - cap 5 rebuilds, pass threshold 8, and rebuilds are
+  *directed*: Cooper's ranked fixes (mechanical + perceptual, B/C-tagged) go
+  into Ben's rebuild brief. **Early exit** - a rebuild that fails to improve
+  the score escalates immediately rather than burning the cap; a non-converging
+  loop is information, not something to retry blindly. Freeze flips on at
   `branded`.
 - **Freeze override** - a frozen chart reopens to `needs_rebuild` the moment
-  Edward flags an integrity failure or Anna flags a contradiction. Cosmetic
-  passes cannot break a freeze; factual errors always do.
+  Edward flags an integrity failure, Anna flags a contradiction, or Fiona logs
+  a **blocking** visual defect. Cosmetic passes cannot break a freeze; factual
+  and legibility failures always do - a chart that cannot be read is a broken
+  chart, not a styling preference. Fiona's `minor` defects never break a
+  freeze; they batch into the delivery pack.
+- **George is not a gate** - by design. His challenges are the questions the
+  client will ask in the room; the pipeline surfaces them, the human answers
+  them. An open challenge never blocks assembly or delivery, george cannot
+  write `resolution`, and `accepted_risk` is a first-class outcome - a
+  judgement call recorded in the manifest rather than an oversight.
+- **Relevance gate** - Edward's check is "legitimate + relevant", and relevance
+  is judgement, not arithmetic: does the document actually support the claim,
+  or merely mention the topic? An irrelevant source escalates exactly like an
+  unverifiable one.
 - **Verification gate** - nothing assembles while any source is not `verified`
   or any figure is not `verified`. **Unverifiable is a blocking defect, not a
   footnote** - a claim whose source cannot be inspected must be sourced or pulled.
@@ -125,15 +177,19 @@ Built and tested end to end, offline:
   reproducing the chassis frame from a defined master and rendering the numbered
   bibliography from the source registry. It refuses an unverified manifest.
 - the **agent adapters** (`adapters.py`) and the **runner** (`run_pipeline.py`) -
-  each role returns a patch the orchestrator validates and applies. Two are
-  mechanical and fully functional now: **Cooper** scores on a rubric, **Edward**
-  checks the number ledger with real arithmetic (transform the source value, compare
-  to what's shown) and verifies the reference registry. Three are generative and
-  skill-backed - **Anna**, **Ben**, **Daniel** - each carrying its real SKILL.md as
-  the system prompt with an offline stub, so the loop runs without an API key.
-  `python run_pipeline.py` drives a signed-off seed through build -> score ->
-  reconcile -> verify -> brand -> assemble to a built deck, including the escalation
-  and resolution when a source is not yet in hand.
+  each role returns a patch the orchestrator validates and applies. The hard
+  gates stay mechanical: **Cooper's** rubric and **Edward's** arithmetic never
+  run on a model. Their judgement halves do - Cooper's perceptual pass
+  (understood simply, direct-label fit, default-challenge) and Edward's
+  relevance check both wire to the model and fail safe to the mechanical gate
+  if the pass errors. The generative roles - **Anna** (storyline, reconcile,
+  audit), **Ben**, **Daniel**, **Fiona** - each carry their real SKILL.md or
+  QA brief as the system prompt with an offline stub, so the loop runs without
+  an API key. `python run_pipeline.py` drives a signed-off seed through
+  build -> score -> reconcile -> verify -> brand -> assemble -> visual QA ->
+  audit to a built deck, including the escalation and resolution when a source
+  is not yet in hand. Fiona's render step uses LibreOffice + pdftoppm when
+  present and degrades gracefully when not.
 
 To go live: set `MODEL = ClaudeModel()` in `run_pipeline.py`. The three generative
 adapters then execute their skills against Claude instead of stubbing; the wiring
@@ -170,7 +226,8 @@ verified example and `deck.pptx`. Visual-QA the result by rendering to images
 ## Files
 
 - `orchestrator.py` - the control spine and the worked gate demo
-- `adapters.py` - the five role adapters + the pluggable model backend (stub / Claude)
+- `adapters.py` - the role adapters (incl. Fiona visual QA, Anna audit, George
+  scrutiny) + the pluggable model backend (stub / Claude) + `render_deck_to_images`
 - `run_pipeline.py` - drives the back half through the adapters to a built deck
 - `assembler.js` - builds a verified manifest into a branded .pptx (PptxGenJS)
 - `manifest.schema.json` - the manifest contract (JSON Schema 2020-12)

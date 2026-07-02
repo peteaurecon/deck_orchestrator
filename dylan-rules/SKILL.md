@@ -200,11 +200,25 @@ not duplicate what the others own.
 | Whether a specific chart is good, what's wrong, what genre to use | `assess-graphical-excellence` |
 | Producing an actual Tufte-correct chart file | `render-tufte-chart` |
 | Reading/parsing/writing the .pptx itself | `pptx` |
+| Whether the argument survives a hostile reader (context, decomposition, backup defensibility) | `george` |
+
+The X2 boundary with `george`: X2 asks "does this exhibit have a takeaway?";
+George asks "does the takeaway survive scrutiny?" A slide can pass X2 cleanly
+and still be an exposed flank. Dylan Rules never runs George's adversarial
+questions, and George never re-litigates X2, T1, or L2.
 
 Build mode sends chart slots *down* to `render-tufte-chart`. Audit mode sends
 weak charts *down* to `assess-graphical-excellence`. Either mode reads a deck
 *in* via `pptx`. Dylan Rules never assesses chart internals or emits chart files
 itself.
+
+**In an orchestrated build, run Audit mode on the pipeline's own output.** The
+build stages enforce rules per slide and per exhibit as they go, but the
+deck-emergent checks - L2 (do the titles alone tell the story), Q1-Q3
+(consistency of title style, grid, and number formats) - can only be judged
+once the whole deck exists. An assembled deck that has never been through the
+Audit workflow is unreviewed by the very rules that built it; auditing your own
+output is not optional polish, it is the closing of the loop.
 
 ## Output format
 

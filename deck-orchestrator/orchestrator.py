@@ -1,7 +1,7 @@
 """
 Reference orchestrator for the Aurecon deck-build loop.
 
-This is the single writer. The six agents (Anna, Ben, Cooper, Edward, Daniel) are
+This is the single writer. The agents (Anna, Ben, Cooper, Edward, Daniel, Fiona) are
 stateless: each is handed a read-only view of the manifest and returns a *patch*
 (a list of ops). The orchestrator validates the patch against an ownership map,
 applies it, logs it, and runs the gate logic. Nothing else mutates the manifest -
@@ -15,8 +15,12 @@ What is enforced here (not in JSON Schema, which only checks shape):
   - ownership: an agent's patch may only touch fields in its lane
   - single writer: only this process applies patches; agents return, never write
   - verification is a build gate: nothing unverifiable assembles
-  - freeze override: an Edward integrity failure or an Anna contradiction reopens
-    a frozen exhibit; cosmetic passes cannot
+  - freeze override: an Edward integrity failure, an Anna contradiction, or a
+    blocking Fiona visual defect reopens a frozen exhibit; cosmetic passes cannot.
+    Legibility failures (clipped text, overlapping labels) count as functional,
+    not cosmetic - a chart that cannot be read is a broken chart
+  - relevance gate: a source Edward judges irrelevant to its claim escalates,
+    same as an unverifiable one
   - escalation caps: Ben<->Cooper at 5, agent<->Anna at 2, then hard_stop -> human
 """
 
@@ -34,7 +38,7 @@ SCHEMA_PATH = HERE / "manifest.schema.json"
 
 ID_FIELD = {
     "slides": "slide_id", "exhibits": "exhibit_id", "figures": "figure_id",
-    "sources": "source_id", "decisions": "decision_id",
+    "sources": "source_id", "decisions": "decision_id", "scrutiny": "challenge_id",
 }
 COLLECTIONS = set(ID_FIELD) | {"log"}
 TOP_OBJECTS = {"meta", "audience", "inputs"}
@@ -51,7 +55,7 @@ OWNERSHIP = {
         "audience/*", "governing_thought",
         "slides", "slides/*/action_title", "slides/*/message", "slides/*/section",
         "slides/*/order", "slides/*/exhibit_id", "slides/*/citations", "slides/*/status",
-        "slides/*/body",
+        "slides/*/body", "slides/*/audit_flags",
         "exhibits/*/type", "exhibits/*/so_what", "exhibits/*/emphasis",
         "figures", "figures/*/shown", "figures/*/anchor", "figures/*/transform",
         "figures/*/role", "figures/*/citation", "figures/*/slide_id", "figures/*/exhibit_id",
@@ -67,6 +71,14 @@ OWNERSHIP = {
         "exhibits/*/genre", "exhibits/*/multi_render", "exhibits/*/status",
         "exhibits/*/cooper", "exhibits/*/cooper/score",
         "exhibits/*/cooper/iterations", "exhibits/*/cooper/open_fixes",
+        "exhibits/*/cooper/perceptual_score", "exhibits/*/cooper/perceptual_fixes",
+    ],
+    "fiona": [
+        "slides/*/visual_qa", "exhibits/*/visual_defects", "exhibits/*/status",
+    ],
+    "george": [
+        "scrutiny", "scrutiny/*/severity", "scrutiny/*/target", "scrutiny/*/question",
+        "scrutiny/*/suggested_fix", "scrutiny/*/pass",
     ],
     "edward": [
         "figures/*/source_value", "figures/*/verification",
@@ -82,6 +94,7 @@ OWNERSHIP = {
     ],
     "human": [
         "audience/signed_off", "decisions/*/status", "decisions/*/resolution",
+        "scrutiny/*/status", "scrutiny/*/resolution",
         "inputs/source_materials", "inputs/source_materials/*/in_hand",
         "inputs/source_materials/*/path",
     ],
@@ -233,6 +246,18 @@ class Orchestrator:
             if (seg[0] in ("sources", "figures") and seg[-1] == "verification"
                     and op["value"] == "verified"):
                 self._clear_decisions(f"{seg[0]}/{seg[1]}")
+            # Edward finds a source irrelevant to its claim -> escalate (blocking judgement)
+            if (seg[0] == "sources" and seg[-1] == "relevance_ok" and op["value"] is False):
+                src = self._find("sources", seg[1])
+                self._escalate(f"sources/{src['source_id']}", "edward_unresolved", "edward",
+                               f"Source {src['source_id']} does not support its claim "
+                               f"('{src.get('claim','')}') - re-source or pull the claim.")
+            # Fiona logs a blocking visual defect -> reopen the exhibit (legibility
+            # is a functional failure, not cosmetic - it beats the freeze)
+            if (seg[0] == "exhibits" and seg[-1] == "visual_defects"
+                    and any(d.get("severity") == "blocking" for d in (op["value"] or []))):
+                blocking = [d["note"] for d in op["value"] if d.get("severity") == "blocking"]
+                self._reopen_exhibit(seg[1], reason=f"visual QA: {'; '.join(blocking)}")
 
     def _clear_decisions(self, object_ref):
         for d in self.m["decisions"]:
@@ -333,6 +358,10 @@ class Orchestrator:
         out.append(f"open decisions: {len(opens)}")
         for d in opens:
             out.append(f"  - [{d['status']}] {d['gate']} ({d.get('object_ref')}): {d['prompt']}")
+        chal = [c for c in m.get("scrutiny", []) if c["status"] == "open"]
+        out.append(f"open scrutiny challenges (advisory - never block): {len(chal)}")
+        for c in chal:
+            out.append(f"  - [{c['severity']}] {c['target']}: {c['question']}")
         return "\n".join(out)
 
 

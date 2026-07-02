@@ -123,6 +123,17 @@ a remedy AND (when applicable) a genre switch / a famous case to avoid / a
 famous case to emulate. The reader should leave with a concrete picture of what
 to build next, not a list of vague improvements.
 
+## In an orchestrated pipeline (hybrid scoring)
+
+When this skill runs as the scoring stage of a deck pipeline, the labour splits:
+a **mechanical rubric owns the encodable rules** (missing data, series overload,
+absent emphasis - checked deterministically, never by a model) and this skill
+supplies the **perceptual pass** - the judgement criteria no rubric can encode:
+can it be understood simply by this audience, do the direct labels work in this
+instance, and the default-challenge rule. The combined score is
+min(mechanical, perceptual): judgement can demand better than the rubric, never
+excuse worse. Return fixes ranked and B/C-tagged so the rebuild is directed.
+
 ## Related skills
 - `render-tufte-chart` (optional, if installed) — rebuild the graphic so it
   satisfies these criteria, using the per-genre scripts named in your fixes.

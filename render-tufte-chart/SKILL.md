@@ -68,6 +68,22 @@ never needs cleanup afterwards. Read that file for the full reasoning.
   one of the "other genres" below, keep it inert too — `wrap_html.py` will
   refuse to wrap anything carrying active content.
 
+## Design to the message, not just from the data
+
+When the chart is bound for a slide, take the slide's **action title, message,
+and emphasis series** as build inputs, not context. A chart designed from data
+alone proves the message only incidentally; a chart designed to the message
+puts the asserted figure or delta where the eye lands first - direct labels on
+the emphasis series, the title number visibly derivable from the marks. If the
+title asserts "cost falls 22%", the 22% delta is the most prominent thing on
+the graphic.
+
+When rebuilding after an assessment (or when the orchestrator hands back ranked
+fixes), address **every listed fix** in priority order - each is tagged with the
+Tufte remedy (B-code) or genre switch (C-code) to apply - and do not regress
+anything that already passed. A rebuild that ignores its fix list converges by
+luck.
+
 ## Pick the genre first
 
 Before writing any code, check `references/tufte-principles.md` Part C and

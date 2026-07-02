@@ -160,6 +160,31 @@ so the build matches this spec exactly.
 
 ---
 
+## Brand lint (machine-checkable)
+
+For an automated QA pass over a rendered or built deck, these are the brand
+rules that can be verified as concrete assertions - no judgement required.
+Each failure names its check:
+
+- **BL1 One green moment** - at most one `89C925`/`6AA41E` element per content
+  slide.
+- **BL2 No off-brand green** - no green hex outside `89C925`, `6AA41E`,
+  `577740` (tertiary, charts only). `2E8B57` is an automatic fail.
+- **BL3 Green never small type on white** - `89C925` appears only as mark/fill;
+  green text is `6AA41E`, bold or ≥18pt, on white/light only.
+- **BL4 Line weights** - every rule, border, divider, and axis line is 0.5pt or
+  0.25pt exactly.
+- **BL5 Type floor** - no text below 11pt; Arial only.
+- **BL6 No decoration** - zero shadows, bevels, glows, 3-D, gradients, title
+  underlines, or edge stripes anywhere in the XML.
+- **BL7 Tables** - no cell fills except header treatments; horizontal rules
+  only, `BBC6C3`.
+- **BL8 Backgrounds** - white content slides; covers/closers only in `373A36`
+  or `1C1B1C`; nothing cream or beige.
+
+A visual-QA agent should walk BL1-BL8 against the rendered slides and report
+each violation with its code, slide, and object.
+
 ## What good looks like
 
 A white deck in Arial, anchored by Aurecon Grey text and Grey 4 hairlines, with

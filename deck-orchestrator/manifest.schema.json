@@ -5,27 +5,53 @@
   "description": "Single source of truth for an orchestrated Aurecon deck build. Normalized, not nested: slides, exhibits, figures and sources are flat collections cross-referenced by id so each agent patches only its own rows. Schema validates shape and enums; cross-reference integrity and the gate rules (freeze override, verification-blocks-assembly, escalation caps) are enforced by the orchestrator, not here.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["meta", "inputs", "slides", "exhibits", "figures", "sources", "decisions", "log"],
+  "required": [
+    "meta",
+    "inputs",
+    "slides",
+    "exhibits",
+    "figures",
+    "sources",
+    "decisions",
+    "log"
+  ],
   "properties": {
-
     "meta": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["deck_id", "stage"],
+      "required": [
+        "deck_id",
+        "stage"
+      ],
       "properties": {
-        "deck_id":      { "type": "string" },
-        "title":        { "type": "string" },
-        "chassis_path": { "type": "string", "description": "Path to the cleaned Aurecon .pptx chassis to build into." },
-        "stage":        { "$ref": "#/$defs/stage" },
-        "created_at":   { "type": "string" },
-        "updated_at":   { "type": "string" }
+        "deck_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "chassis_path": {
+          "type": "string",
+          "description": "Path to the cleaned Aurecon .pptx chassis to build into."
+        },
+        "stage": {
+          "$ref": "#/$defs/stage"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        }
       }
     },
-
     "inputs": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["analysis", "source_materials"],
+      "required": [
+        "analysis",
+        "source_materials"
+      ],
       "properties": {
         "analysis": {
           "type": "array",
@@ -33,12 +59,33 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["analysis_id", "kind", "path"],
+            "required": [
+              "analysis_id",
+              "kind",
+              "path"
+            ],
             "properties": {
-              "analysis_id": { "type": "string" },
-              "kind":        { "type": "string", "enum": ["pptx", "xlsx", "csv", "docx", "pdf", "notes", "other"] },
-              "path":        { "type": "string" },
-              "note":        { "type": "string" }
+              "analysis_id": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "pptx",
+                  "xlsx",
+                  "csv",
+                  "docx",
+                  "pdf",
+                  "notes",
+                  "other"
+                ]
+              },
+              "path": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              }
             }
           }
         },
@@ -48,197 +95,756 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["source_material_id", "in_hand"],
+            "required": [
+              "source_material_id",
+              "in_hand"
+            ],
             "properties": {
-              "source_material_id": { "type": "string" },
-              "label":              { "type": "string", "description": "e.g. 'KPMG data-centre benchmark 2023'." },
-              "in_hand":            { "type": "boolean", "description": "True only if the actual document/dataset is provided and inspectable." },
-              "path":               { "type": "string", "description": "Present iff in_hand." },
-              "locator":            { "type": "string", "description": "DOI/URL/citation when not in hand." }
+              "source_material_id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string",
+                "description": "e.g. 'KPMG data-centre benchmark 2023'."
+              },
+              "in_hand": {
+                "type": "boolean",
+                "description": "True only if the actual document/dataset is provided and inspectable."
+              },
+              "path": {
+                "type": "string",
+                "description": "Present iff in_hand."
+              },
+              "locator": {
+                "type": "string",
+                "description": "DOI/URL/citation when not in hand."
+              }
             }
           }
         }
       }
     },
-
     "audience": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["altitude", "purpose", "disposition", "delivery", "signed_off"],
+      "required": [
+        "altitude",
+        "purpose",
+        "disposition",
+        "delivery",
+        "signed_off"
+      ],
       "properties": {
-        "altitude":    { "type": "string", "enum": ["executive", "technical", "mixed"] },
-        "purpose":     { "type": "string", "enum": ["decide", "persuade", "inform"] },
-        "disposition": { "type": "string", "enum": ["friendly", "neutral", "skeptical"] },
-        "delivery":    { "type": "string", "enum": ["live", "standalone"] },
-        "adjustments": { "type": "string", "description": "Resulting deck adjustments per the audience matrix." },
-        "signed_off":  { "type": "boolean", "description": "Set true only by the human storyline gate." }
+        "altitude": {
+          "type": "string",
+          "enum": [
+            "executive",
+            "technical",
+            "mixed"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "decide",
+            "persuade",
+            "inform"
+          ]
+        },
+        "disposition": {
+          "type": "string",
+          "enum": [
+            "friendly",
+            "neutral",
+            "skeptical"
+          ]
+        },
+        "delivery": {
+          "type": "string",
+          "enum": [
+            "live",
+            "standalone"
+          ]
+        },
+        "adjustments": {
+          "type": "string",
+          "description": "Resulting deck adjustments per the audience matrix."
+        },
+        "signed_off": {
+          "type": "boolean",
+          "description": "Set true only by the human storyline gate."
+        }
       }
     },
-
-    "governing_thought": { "type": "string" },
-
+    "governing_thought": {
+      "type": "string"
+    },
     "slides": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["slide_id", "order", "section", "status"],
+        "required": [
+          "slide_id",
+          "order",
+          "section",
+          "status"
+        ],
         "properties": {
-          "slide_id":     { "type": "string" },
-          "order":        { "type": "integer", "minimum": 0 },
-          "section":      { "$ref": "#/$defs/section" },
-          "action_title": { "type": "string", "description": "Full-sentence assertion (T1)." },
-          "message":      { "type": "string", "description": "The single point the slide proves (L3)." },
-          "body":         { "type": "array", "items": { "type": "string" }, "description": "Prose/bullet lines for an exhibit-less slide (e.g. a recommendations list). Rendered when the slide has no exhibit." },
-          "exhibit_id":   { "type": ["string", "null"], "description": "The exhibit on this slide, or null for a text/stat slide." },
-          "citations":    { "type": "array", "items": { "type": "string" }, "description": "source_ids cited on this slide (R1)." },
-          "status":       { "type": "string", "enum": ["draft", "structured", "reconciled", "branded"] }
+          "slide_id": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "section": {
+            "$ref": "#/$defs/section"
+          },
+          "action_title": {
+            "type": "string",
+            "description": "Full-sentence assertion (T1)."
+          },
+          "message": {
+            "type": "string",
+            "description": "The single point the slide proves (L3)."
+          },
+          "body": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Prose/bullet lines for an exhibit-less slide (e.g. a recommendations list). Rendered when the slide has no exhibit."
+          },
+          "exhibit_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The exhibit on this slide, or null for a text/stat slide."
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "source_ids cited on this slide (R1)."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "structured",
+              "reconciled",
+              "branded"
+            ]
+          },
+          "visual_qa": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "pending",
+              "pass",
+              "defects",
+              null
+            ],
+            "description": "Fiona's verdict on the rendered slide image. defects = at least one visual defect logged on its exhibit."
+          },
+          "audit_flags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Post-assembly dylan-rules audit findings for this slide, tagged with rule codes (e.g. 'T1: title is a label'). Empty = clean."
+          }
         }
       }
     },
-
     "exhibits": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["exhibit_id", "slide_id", "type", "status"],
+        "required": [
+          "exhibit_id",
+          "slide_id",
+          "type",
+          "status"
+        ],
         "properties": {
-          "exhibit_id":   { "type": "string" },
-          "slide_id":     { "type": "string" },
-          "type":         { "type": "string", "enum": ["chart", "table", "stat", "diagram"], "description": "Routing flag. chart -> Ben+Cooper; table/stat -> dylan+Daniel; diagram -> assembler+Daniel." },
-          "so_what":      { "type": "string", "description": "The takeaway it proves (X2)." },
-          "emphasis":     { "type": ["string", "null"], "description": "The series/element that carries the so-what; Daniel paints this Aurecon Green. Anna's call." },
-          "genre":        { "type": ["string", "null"], "description": "Tufte genre, set by Cooper pre-flight (charts only)." },
-          "multi_render": { "type": "boolean", "description": "Cooper flagged two valid forms; the human picks at the gate." },
-          "data_ref":     { "$ref": "#/$defs/data_ref" },
-          "figure_ids":   { "type": "array", "items": { "type": "string" }, "description": "figures shown by this exhibit." },
-          "object_kind":  { "type": ["string", "null"], "enum": ["pptxgenjs_chart", "pptxgenjs_table", "native_shapes", "text", null], "description": "What Ben/assembler built it as (F4: native, never a picture)." },
-          "cooper":       { "$ref": "#/$defs/cooper" },
-          "status":       { "type": "string", "enum": ["specced", "building", "scored", "needs_rebuild", "reconciled", "branded"] }
+          "exhibit_id": {
+            "type": "string"
+          },
+          "slide_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "chart",
+              "table",
+              "stat",
+              "diagram"
+            ],
+            "description": "Routing flag. chart -> Ben+Cooper; table/stat -> dylan+Daniel; diagram -> assembler+Daniel."
+          },
+          "so_what": {
+            "type": "string",
+            "description": "The takeaway it proves (X2)."
+          },
+          "emphasis": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The series/element that carries the so-what; Daniel paints this Aurecon Green. Anna's call."
+          },
+          "genre": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Tufte genre, set by Cooper pre-flight (charts only)."
+          },
+          "multi_render": {
+            "type": "boolean",
+            "description": "Cooper flagged two valid forms; the human picks at the gate."
+          },
+          "data_ref": {
+            "$ref": "#/$defs/data_ref"
+          },
+          "figure_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "figures shown by this exhibit."
+          },
+          "object_kind": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "pptxgenjs_chart",
+              "pptxgenjs_table",
+              "native_shapes",
+              "text",
+              null
+            ],
+            "description": "What Ben/assembler built it as (F4: native, never a picture)."
+          },
+          "cooper": {
+            "$ref": "#/$defs/cooper"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "specced",
+              "building",
+              "scored",
+              "needs_rebuild",
+              "reconciled",
+              "branded"
+            ]
+          },
+          "visual_defects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "severity",
+                "note"
+              ],
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "blocking",
+                    "minor"
+                  ],
+                  "description": "blocking = legibility failure (clipped text, overlapping labels, collision, off-slide element) - reopens the exhibit even if frozen. minor = polish, batched to the human pack."
+                },
+                "note": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Fiona's findings from inspecting the rendered slide. Written at visual_qa; cleared on rebuild."
+          }
         }
       }
     },
-
     "figures": {
       "type": "array",
       "description": "The number ledger. One row per figure that reaches a slide. Edward owns verification.",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["figure_id", "shown", "role", "verification"],
+        "required": [
+          "figure_id",
+          "shown",
+          "role",
+          "verification"
+        ],
         "properties": {
-          "figure_id":    { "type": "string" },
-          "shown":        { "description": "The value as displayed on the slide (string preserves '$1.2m', '22%', etc.).", "type": ["string", "number"] },
-          "slide_id":     { "type": ["string", "null"] },
-          "exhibit_id":   { "type": ["string", "null"] },
-          "role":         { "type": "string", "enum": ["datapoint", "axis", "title", "callout", "table_cell", "subtext"] },
-          "anchor":       { "$ref": "#/$defs/anchor" },
-          "transform":    { "type": ["string", "null"], "description": "Declared transform from source to shown, e.g. 'round 2sf', 'sum / 1e6 -> $m', '% of total'. Edward applies this to source_value and checks it reproduces shown." },
-          "source_value": { "description": "The raw value found at the anchor; written by Edward.", "type": ["string", "number", "null"] },
-          "citation":     { "type": ["string", "null"], "description": "source_id this figure is sourced to." },
-          "verification": { "type": "string", "enum": ["pending", "verified", "mismatch", "unanchored"], "description": "mismatch or unanchored both block assembly and override the freeze on the owning exhibit." }
+          "figure_id": {
+            "type": "string"
+          },
+          "shown": {
+            "description": "The value as displayed on the slide (string preserves '$1.2m', '22%', etc.).",
+            "type": [
+              "string",
+              "number"
+            ]
+          },
+          "slide_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "exhibit_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "datapoint",
+              "axis",
+              "title",
+              "callout",
+              "table_cell",
+              "subtext"
+            ]
+          },
+          "anchor": {
+            "$ref": "#/$defs/anchor"
+          },
+          "transform": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Declared transform from source to shown, e.g. 'round 2sf', 'sum / 1e6 -> $m', '% of total'. Edward applies this to source_value and checks it reproduces shown."
+          },
+          "source_value": {
+            "description": "The raw value found at the anchor; written by Edward.",
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "citation": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "source_id this figure is sourced to."
+          },
+          "verification": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "verified",
+              "mismatch",
+              "unanchored"
+            ],
+            "description": "mismatch or unanchored both block assembly and override the freeze on the owning exhibit."
+          }
         }
       }
     },
-
     "sources": {
       "type": "array",
       "description": "The reference registry. One row per distinct source. Orchestrator assigns the [n]; Edward owns verification + relevance; the bibliography is rendered from this.",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["source_id", "verification"],
+        "required": [
+          "source_id",
+          "verification"
+        ],
         "properties": {
-          "source_id":          { "type": "string" },
-          "citation":           { "type": ["integer", "null"], "minimum": 1, "description": "The [n] marker, assigned by the orchestrator in order of first appearance." },
-          "bibliography_entry": { "type": ["string", "null"], "description": "Full formatted reference for the appendix." },
-          "source_material_id": { "type": ["string", "null"], "description": "Link to inputs.source_materials; null means no material provided." },
-          "claim":              { "type": ["string", "null"], "description": "The claim this source is attached to (for the relevance check)." },
-          "verification":       { "type": "string", "enum": ["pending", "verified", "unverifiable"], "description": "unverifiable is a blocking defect, not an annotation: source not in hand and not otherwise inspectable." },
-          "relevance_ok":       { "type": ["boolean", "null"], "description": "Does the source actually support its claim? Only assessable when the source is in hand." },
-          "used_on":            { "type": "array", "items": { "type": "string" }, "description": "slide_ids that cite this source." }
+          "source_id": {
+            "type": "string"
+          },
+          "citation": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "description": "The [n] marker, assigned by the orchestrator in order of first appearance."
+          },
+          "bibliography_entry": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Full formatted reference for the appendix."
+          },
+          "source_material_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Link to inputs.source_materials; null means no material provided."
+          },
+          "claim": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The claim this source is attached to (for the relevance check)."
+          },
+          "verification": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "verified",
+              "unverifiable"
+            ],
+            "description": "unverifiable is a blocking defect, not an annotation: source not in hand and not otherwise inspectable."
+          },
+          "relevance_ok": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Does the source actually support its claim? Only assessable when the source is in hand."
+          },
+          "used_on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "slide_ids that cite this source."
+          }
         }
       }
     },
-
     "decisions": {
       "type": "array",
       "description": "Open questions and escalations. Anything that needs the human batches here.",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["decision_id", "gate", "origin", "status"],
+        "required": [
+          "decision_id",
+          "gate",
+          "origin",
+          "status"
+        ],
         "properties": {
-          "decision_id": { "type": "string" },
-          "gate":        { "type": "string", "enum": ["storyline_signoff", "chart_form", "multi_render", "cooper_stuck", "anna_contradiction", "edward_unresolved"] },
-          "origin":      { "type": "string", "enum": ["orchestrator", "anna", "ben", "cooper", "edward", "daniel"] },
-          "object_ref":  { "type": ["string", "null"], "description": "collection/id this decision is about, e.g. 'sources/src_kpmg'." },
-          "prompt":      { "type": "string" },
-          "options":     { "type": "array", "items": { "type": "string" } },
-          "status":      { "type": "string", "enum": ["open", "resolved", "hard_stop"] },
-          "resolution":  { "type": ["string", "null"] },
-          "rounds":      { "type": "integer", "minimum": 0, "description": "Agent<->Anna round count; at cap the orchestrator flips this to hard_stop." }
+          "decision_id": {
+            "type": "string"
+          },
+          "gate": {
+            "type": "string",
+            "enum": [
+              "storyline_signoff",
+              "chart_form",
+              "multi_render",
+              "cooper_stuck",
+              "anna_contradiction",
+              "edward_unresolved"
+            ]
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "orchestrator",
+              "anna",
+              "ben",
+              "cooper",
+              "edward",
+              "daniel",
+              "fiona"
+            ]
+          },
+          "object_ref": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "collection/id this decision is about, e.g. 'sources/src_kpmg'."
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "resolved",
+              "hard_stop"
+            ]
+          },
+          "resolution": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rounds": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Agent<->Anna round count; at cap the orchestrator flips this to hard_stop."
+          }
         }
       }
     },
-
     "log": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["ts", "agent", "action"],
+        "required": [
+          "ts",
+          "agent",
+          "action"
+        ],
         "properties": {
-          "ts":         { "type": "string" },
-          "agent":      { "type": "string", "enum": ["orchestrator", "anna", "ben", "cooper", "edward", "daniel", "human"] },
-          "object_ref": { "type": ["string", "null"] },
-          "action":     { "type": "string" },
-          "outcome":    { "type": ["string", "null"] }
+          "ts": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string",
+            "enum": [
+              "orchestrator",
+              "anna",
+              "ben",
+              "cooper",
+              "edward",
+              "daniel",
+              "fiona",
+              "human",
+              "george"
+            ]
+          },
+          "object_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "action": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "scrutiny": {
+      "type": "array",
+      "description": "George's adversarial challenges. Purely advisory: nothing here blocks a gate. resolution is written only by the human - 'addressed' or 'accepted_risk'. An open challenge in the delivery pack is a question the client will ask in the room.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "challenge_id",
+          "severity",
+          "target",
+          "question",
+          "status"
+        ],
+        "properties": {
+          "challenge_id": {
+            "type": "string"
+          },
+          "pass": {
+            "type": "string",
+            "enum": [
+              "storyline",
+              "assembled"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "kill_shot",
+              "exposed_flank",
+              "backup_gap"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "'governing_thought' or a slide_id."
+          },
+          "question": {
+            "type": "string",
+            "description": "The skeptic's question, verbatim as the client would ask it."
+          },
+          "suggested_fix": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Advisory only: add context / decompose / pre-empt / backup slide."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "resolved"
+            ]
+          },
+          "resolution": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "addressed",
+              "accepted_risk",
+              null
+            ],
+            "description": "Human-only. accepted_risk is a legitimate outcome - a judgement call, recorded."
+          }
         }
       }
     }
   },
-
   "$defs": {
     "stage": {
       "type": "string",
-      "enum": ["ingest", "storyline", "signoff", "build", "reconcile", "verify", "brand", "assemble", "delivered", "blocked"],
+      "enum": [
+        "ingest",
+        "storyline",
+        "signoff",
+        "build",
+        "reconcile",
+        "verify",
+        "brand",
+        "assemble",
+        "visual_qa",
+        "audit",
+        "scrutiny",
+        "delivered",
+        "blocked"
+      ],
       "description": "ingest(Anna) -> storyline -> signoff(human gate) -> build(Ben/Cooper) -> reconcile(Anna) -> verify(Edward) -> brand(Daniel) -> assemble(orchestrator) -> delivered. blocked = a hard_stop decision is open."
     },
     "section": {
       "type": "string",
-      "enum": ["cover", "recommendations", "conclusions_recommendations", "analysis", "facts", "develop_hypothesis", "situation_complications", "appendix"],
+      "enum": [
+        "cover",
+        "recommendations",
+        "conclusions_recommendations",
+        "analysis",
+        "facts",
+        "develop_hypothesis",
+        "situation_complications",
+        "appendix"
+      ],
       "description": "Delivery order = answer-first pyramid; appendix holds the bibliography and any method/working."
     },
     "data_ref": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "additionalProperties": false,
       "description": "Per the data-location decision: raw data lives in external files; the manifest holds only the aggregated series actually plotted, plus its provenance. Keeps the manifest a control object, not a data store.",
       "properties": {
-        "path":           { "type": "string", "description": "External file holding the underlying data." },
-        "selector":       { "type": "string", "description": "Sheet/range/query that produced the plotted series." },
-        "plotted_series": { "type": "array", "items": {}, "description": "Only the aggregated values actually drawn." },
-        "anchor":         { "$ref": "#/$defs/anchor" }
+        "path": {
+          "type": "string",
+          "description": "External file holding the underlying data."
+        },
+        "selector": {
+          "type": "string",
+          "description": "Sheet/range/query that produced the plotted series."
+        },
+        "plotted_series": {
+          "type": "array",
+          "items": {},
+          "description": "Only the aggregated values actually drawn."
+        },
+        "anchor": {
+          "$ref": "#/$defs/anchor"
+        }
       }
     },
     "anchor": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "additionalProperties": false,
       "description": "Provenance pointer into a source material. Written upstream by Anna/Ben so Edward verifies a specific claim against a specific location rather than re-deriving.",
       "properties": {
-        "source_material_id": { "type": "string" },
-        "locator":            { "type": "string", "description": "sheet!cell, table/row, figure n, page n." }
+        "source_material_id": {
+          "type": "string"
+        },
+        "locator": {
+          "type": "string",
+          "description": "sheet!cell, table/row, figure n, page n."
+        }
       }
     },
     "cooper": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "score":      { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
-        "iterations": { "type": "integer", "minimum": 0, "description": "Ben<->Cooper rebuilds; at 5 it escalates (cooper_stuck)." },
-        "frozen":     { "type": "boolean", "description": "Set true at branded. Overridable only by an Edward integrity failure or an Anna contradiction." },
-        "open_fixes": { "type": "array", "items": { "type": "string" }, "description": "Cooper's ranked B-code/genre fixes for Ben." }
+        "score": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 10
+        },
+        "iterations": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Ben<->Cooper rebuilds; at 5 it escalates (cooper_stuck)."
+        },
+        "frozen": {
+          "type": "boolean",
+          "description": "Set true at branded. Overridable only by an Edward integrity failure or an Anna contradiction."
+        },
+        "open_fixes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Cooper's ranked B-code/genre fixes for Ben."
+        },
+        "perceptual_score": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Model pass over the perceptual criteria the rubric cannot encode (understood simply, direct-label judgement, default-challenge). Final score = min(mechanical, perceptual)."
+        },
+        "perceptual_fixes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Ranked fixes from the perceptual pass, merged into open_fixes for Ben."
+        }
       }
     }
   }
