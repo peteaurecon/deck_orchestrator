@@ -1,0 +1,9 @@
+# Line-ending policy (portable-agentic-env master plan, Phase 0).
+# LF everywhere so bash scripts, SKILL.md and YAML are identical on
+# Windows/macOS; committed attributes (not per-machine config) are the
+# source of truth. core.autocrlf=false globally.
+* text=auto eol=lf
+
+# Windows batch files require CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
