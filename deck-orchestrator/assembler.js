@@ -136,10 +136,38 @@ function renderStat(pptx, s, ex, m) {
   }
 }
 
+function renderTable(pptx, s, ex) {
+  const rows = (ex.data_ref && ex.data_ref.rows) || [];
+  if (!rows.length) return;
+  const tableRows = rows.map((r, rIdx) => r.map((c) => {
+    const isHeader = rIdx === 0;
+    return {
+      text: c,
+      options: {
+        fontFace: FONT,
+        fontSize: isHeader ? 12 : 10,
+        bold: isHeader,
+        color: isHeader ? C.grey1 : C.grey2,
+        align: "left",
+        valign: "middle",
+        fill: isHeader ? { color: C.grey4 } : undefined,
+      }
+    };
+  }));
+  s.addTable(tableRows, {
+    x: FRAME.body.x,
+    y: FRAME.body.y + 0.2,
+    w: FRAME.body.w,
+    colW: ex.colWidths,
+    border: { type: "solid", color: C.grey4, width: 0.5 },
+  });
+}
+
 function renderExhibit(pptx, s, ex, m) {
   if (!ex) return;
   if (ex.type === "chart") renderBars(pptx, s, ex);
   else if (ex.type === "stat") renderStat(pptx, s, ex, m);
+  else if (ex.type === "table") renderTable(pptx, s, ex);
   else {
     s.addText("[" + ex.type + " exhibit - " + (ex.so_what || "") + "]",
       { x: FRAME.body.x, y: FRAME.body.y, w: FRAME.body.w, h: 1.0, fontFace: FONT,
